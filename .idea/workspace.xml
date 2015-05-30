@@ -11,7 +11,7 @@
     </ADDITIONAL_GENERATION_ENVIRONMENT>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="f5f4955c-a7ea-439c-9ec6-41d2b449892a" name="Default" comment="Finished CMakeification, may need some slight tweaking but it compiles.">
+    <list default="true" id="f5f4955c-a7ea-439c-9ec6-41d2b449892a" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/README.markdown" afterPath="$PROJECT_DIR$/README.markdown" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
@@ -60,8 +60,8 @@
             <state />
           </provider>
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.12609456">
-              <caret line="4" column="0" selection-start-line="4" selection-start-column="0" selection-end-line="4" selection-end-column="0" />
+            <state vertical-scroll-proportion="0.09457093">
+              <caret line="3" column="68" selection-start-line="3" selection-start-column="68" selection-end-line="3" selection-end-column="68" />
               <folding />
             </state>
           </provider>
@@ -250,7 +250,13 @@
       <option name="project" value="LOCAL" />
       <updated>1432968849436</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="changed readme">
+      <created>1432969914240</created>
+      <option name="number" value="00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1432969914240</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -301,7 +307,8 @@
     <MESSAGE value="Removed unused variables + fixed an error in a comment." />
     <MESSAGE value="Added CMakeLists.txt" />
     <MESSAGE value="Finished CMakeification, may need some slight tweaking but it compiles." />
-    <option name="LAST_COMMIT_MESSAGE" value="Finished CMakeification, may need some slight tweaking but it compiles." />
+    <MESSAGE value="changed readme" />
+    <option name="LAST_COMMIT_MESSAGE" value="changed readme" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
@@ -401,8 +408,8 @@
         <state />
       </provider>
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.12609456">
-          <caret line="4" column="0" selection-start-line="4" selection-start-column="0" selection-end-line="4" selection-end-column="0" />
+        <state vertical-scroll-proportion="0.09457093">
+          <caret line="3" column="68" selection-start-line="3" selection-start-column="68" selection-end-line="3" selection-end-column="68" />
           <folding />
         </state>
       </provider>
