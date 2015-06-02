@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 2.8.4)
 project(libsodium_Cmake C CXX ASM)
 
 #TODO?: Add mmx, SSE2, SSE3, SSSE3 checks.
+#TODO?: More of the emscripten stuff.
 
 INCLUDE(CheckCCompilerFlag)
 
@@ -16,17 +17,17 @@ OPTION(ENABLE_MINIMAL_BUILD             "Only compile the minimum set of functio
 OPTION(ENABLE_TESTS                     "Enable testing.")
 OPTION(DISABLE_ASM                      "Disable AMD64 assembly implementations.")
 OPTION(DISABLE_PIE                      "Do not produce position independent executables.")
-OPTION(DISABLE_SPP                      "Do not compile with -fstack-protector.")
+OPTION(DISABLE_SSP                      "Do not compile with -fstack-protector.")
 
 
 #----------------------------------------------------------
 ######################### VERSION #########################
 #----------------------------------------------------------
 
+SET(VERSION 1.0.3)
 SET(SODIUM_LIBRARY_VERSION_MAJOR 7)
 SET(SODIUM_LIBRARY_VERSION_MINOR 5)
 SET(DLL_VERSION 6)
-SET(VERSION 1.0.3)
 
 SET(SODIUM_LIBRARY_VERSION "15:0:2")
 #                            | | |
@@ -63,6 +64,17 @@ ELSE(${BIG_ENDIAN})
     ADD_DEFINITIONS("-DNATIVE_LITTLE_ENDIAN=1")
     MESSAGE("System is in Little Endian.")
 ENDIF(${BIG_ENDIAN})
+
+
+IF(EMSCRIPTEN)
+    SET(DISABLE_ASM ON)
+    MESSAGE("Compiling to javascript, disabling asm implementations.")
+ENDIF()
+
+
+IF(MSYS OR MINGW OR CYGWIN)
+    SET(DISABLE_PIE ON)
+ENDIF()
 
 
 #TI mode check
@@ -256,17 +268,24 @@ ELSE(CMAKE_BUILD_TYPE MATCHES Debug)
     CHECK_COMPILER_FLAG(O3)
 ENDIF(CMAKE_BUILD_TYPE MATCHES Debug)
 
-
 #Check if -std=c99 is available.
 CHECK_COMPILER_FLAG(std=c99)
+
+#Check if -D_FORTIFY_SOURCE=2 is available.
+CHECK_COMPILER_FLAG(D_FORTIFY_SOURCE=2)
 
 #Check if clang and if -Wno-unknown-warning-option is available.
 IF("${CMAKE_C_COMPILER_ID}" OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
     CHECK_COMPILER_FLAG(Wno-unknown-warning-option)
 ENDIF()
 
-#Check if -fPIC is available.
-CHECK_COMPILER_FLAG(fPIC)
+IF(NOT (MSYS OR MINGW OR CYGWIN))
+    #Check if -fPIC is available.
+    CHECK_COMPILER_FLAG(fPIC)
+ELSE(NOT (MSYS OR MINGW OR CYGWIN))
+    CHECK_COMPILER_FLAG(Wl,--dynamicbase)
+    CHECK_COMPILER_FLAG(Wl,--nxcompat)
+ENDIF(NOT (MSYS OR MINGW OR CYGWIN))
 
 #Check if -fPIE is available.
 IF(NOT DISABLE_PIE)
@@ -292,10 +311,10 @@ IF(NOT IS_fno-strict-overflow_AVAILABLE)
     CHECK_COMPILER_FLAG(fwrapv)
 ENDIF()
 
-IF(NOT DISABLE_SPP)
+IF(NOT DISABLE_SSP)
     #Check if -fstack-protector is available.
     CHECK_COMPILER_FLAG(fstack-protector)
-ENDIF(NOT DISABLE_SPP)
+ENDIF(NOT DISABLE_SSP)
 
 #Check if -Winit-self is available.
 CHECK_COMPILER_FLAG(Winit-self)
@@ -660,7 +679,7 @@ ENDIF(NOT ENABLE_MINIMAL_BUILD)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/build")
 
-ADD_DEFINITIONS("-D_FORTIFY_SOURCE=2")
+
 
 IF(ENABLE_BLOCKING_RANDOM)
     ADD_DEFINITIONS("-DUSE_BLOCKING_RANDOM")

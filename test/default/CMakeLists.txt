@@ -45,8 +45,8 @@ TARGET_LINK_LIBRARIES(box_easy              ${LIBSODIUM_LIB_PATH})
 ADD_EXECUTABLE       (box_easy2             cmptest.h box_easy2.c)
 TARGET_LINK_LIBRARIES(box_easy2             ${LIBSODIUM_LIB_PATH})
 
-ADD_EXECUTABLE       (box_seal             cmptest.h box_seal.c)
-TARGET_LINK_LIBRARIES(box_seal             ${LIBSODIUM_LIB_PATH})
+ADD_EXECUTABLE       (box_seal              cmptest.h box_seal.c)
+TARGET_LINK_LIBRARIES(box_seal              ${LIBSODIUM_LIB_PATH})
 
 ADD_EXECUTABLE       (box_seed              cmptest.h box_seed.c)
 TARGET_LINK_LIBRARIES(box_seed              ${LIBSODIUM_LIB_PATH})
