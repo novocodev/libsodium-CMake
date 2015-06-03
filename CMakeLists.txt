@@ -45,6 +45,36 @@ SET(SODIUM_LIBRARY_VERSION "15:0:2")
 CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/src/libsodium/include/sodium/version.h.in ${CMAKE_CURRENT_SOURCE_DIR}/src/libsodium/include/sodium/version.h)
 
 
+#-----------------------------------------------------------------------
+########################### CPM configuration ##########################
+#-----------------------------------------------------------------------
+set(CPM_MODULE_NAME "libsodium_Cmake")
+set(CPM_LIB_TARGET_NAME ${CPM_MODULE_NAME})
+
+if ((DEFINED CPM_DIR) AND (DEFINED CPM_UNIQUE_ID) AND (DEFINED CPM_TARGET_NAME))
+  set(CPM_LIB_TARGET_NAME ${CPM_TARGET_NAME})
+  set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CPM_DIR})
+  include(CPM)
+else()
+  set (CPM_DIR "${CMAKE_CURRENT_BINARY_DIR}/cpm-packages" CACHE TYPE STRING)
+  find_package(Git)
+  if(NOT GIT_FOUND)
+    message(FATAL_ERROR "CPM requires Git.")
+  endif()
+  if (NOT EXISTS ${CPM_DIR}/CPM.cmake)
+    message(STATUS "Cloning repo (https://github.com/iauns/cpm)")
+    execute_process(
+      COMMAND "${GIT_EXECUTABLE}" clone https://github.com/iauns/cpm ${CPM_DIR}
+      RESULT_VARIABLE error_code
+      OUTPUT_QUIET ERROR_QUIET)
+    if(error_code)
+      message(FATAL_ERROR "CPM failed to get the hash for HEAD")
+    endif()
+  endif()
+  include(${CPM_DIR}/CPM.cmake)
+endif()
+
+
 #----------------------------------------------------------
 ###################### SYSTEM CHECKS ######################
 #----------------------------------------------------------
@@ -680,7 +710,6 @@ ENDIF(NOT ENABLE_MINIMAL_BUILD)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/build")
 
 
-
 IF(ENABLE_BLOCKING_RANDOM)
     ADD_DEFINITIONS("-DUSE_BLOCKING_RANDOM")
 ENDIF(ENABLE_BLOCKING_RANDOM)
@@ -697,6 +726,13 @@ SET_TARGET_PROPERTIES(sodium PROPERTIES
     ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/lib
     PROJECT_LABEL "libsodium"
 )
+
+# CPM stuff
+
+CPM_ForceOnlyOneModuleVersion()
+CPM_ExportAdditionalIncludeDir(${CMAKE_CURRENT_SOURCE_DIR}/src/libsodium/include)
+CPM_ExportAdditionalLibraryTarget("sodium")
+CPM_InitModule(${CPM_MODULE_NAME})
 
 
 #----------------------------------------------------------
