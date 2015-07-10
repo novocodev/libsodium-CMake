@@ -18,7 +18,7 @@ OPTION(ENABLE_TESTS                     "Enable testing.")
 OPTION(DISABLE_ASM                      "Disable AMD64 assembly implementations.")
 OPTION(DISABLE_PIE                      "Do not produce position independent executables.")
 OPTION(DISABLE_SSP                      "Do not compile with -fstack-protector.")
-
+OPTION(DISABLE_CPM                      "Do not use CPM module")
 
 #----------------------------------------------------------
 ######################### VERSION #########################
@@ -42,37 +42,39 @@ SET(SODIUM_LIBRARY_VERSION "15:0:2")
 #                     |           set to zero if current is incremented
 #                     +- increment if interfaces have been added, removed or changed
 
-CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/src/libsodium/include/sodium/version.h.in ${CMAKE_CURRENT_SOURCE_DIR}/src/libsodium/include/sodium/version.h)
+CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/src/libsodium/include/sodium/version.h.in ${CMAKE_CURRENT_BINARY_DIR}/src/libsodium/include/sodium/version.h)
 
 
 #-----------------------------------------------------------------------
 ########################### CPM configuration ##########################
 #-----------------------------------------------------------------------
-set(CPM_MODULE_NAME "libsodium_Cmake")
-set(CPM_LIB_TARGET_NAME ${CPM_MODULE_NAME})
-
-if ((DEFINED CPM_DIR) AND (DEFINED CPM_UNIQUE_ID) AND (DEFINED CPM_TARGET_NAME))
-  set(CPM_LIB_TARGET_NAME ${CPM_TARGET_NAME})
-  set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CPM_DIR})
-  include(CPM)
-else()
-  set (CPM_DIR "${CMAKE_CURRENT_BINARY_DIR}/cpm-packages" CACHE TYPE STRING)
-  find_package(Git)
-  if(NOT GIT_FOUND)
-    message(FATAL_ERROR "CPM requires Git.")
-  endif()
-  if (NOT EXISTS ${CPM_DIR}/CPM.cmake)
-    message(STATUS "Cloning repo (https://github.com/iauns/cpm)")
-    execute_process(
-      COMMAND "${GIT_EXECUTABLE}" clone https://github.com/iauns/cpm ${CPM_DIR}
-      RESULT_VARIABLE error_code
-      OUTPUT_QUIET ERROR_QUIET)
-    if(error_code)
-      message(FATAL_ERROR "CPM failed to get the hash for HEAD")
+if(NOT DISABLE_CPM)
+  set(CPM_MODULE_NAME "libsodium_Cmake")
+  set(CPM_LIB_TARGET_NAME ${CPM_MODULE_NAME})
+  
+  if ((DEFINED CPM_DIR) AND (DEFINED CPM_UNIQUE_ID) AND (DEFINED CPM_TARGET_NAME))
+    set(CPM_LIB_TARGET_NAME ${CPM_TARGET_NAME})
+    set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CPM_DIR})
+    include(CPM)
+  else()
+    set (CPM_DIR "${CMAKE_CURRENT_BINARY_DIR}/cpm-packages" CACHE TYPE STRING)
+    find_package(Git)
+    if(NOT GIT_FOUND)
+      message(FATAL_ERROR "CPM requires Git.")
     endif()
+    if (NOT EXISTS ${CPM_DIR}/CPM.cmake)
+      message(STATUS "Cloning repo (https://github.com/iauns/cpm)")
+      execute_process(
+        COMMAND "${GIT_EXECUTABLE}" clone https://github.com/iauns/cpm ${CPM_DIR}
+        RESULT_VARIABLE error_code
+        OUTPUT_QUIET ERROR_QUIET)
+      if(error_code)
+        message(FATAL_ERROR "CPM failed to get the hash for HEAD")
+      endif()
+    endif()
+    include(${CPM_DIR}/CPM.cmake)
   endif()
-  include(${CPM_DIR}/CPM.cmake)
-endif()
+endif(NOT DISABLE_CPM)
 
 
 #----------------------------------------------------------
@@ -109,9 +111,9 @@ ENDIF()
 
 #TI mode check
 IF(${IS_BIGENDIAN})
-    TRY_COMPILE(HAVE_TI_MODE_COMPILE ${CMAKE_CURRENT_SOURCE_DIR}/build ${CMAKE_CURRENT_SOURCE_DIR}/test/HAVE_TI_MODE.c COMPILE_DEFINITIONS -DNATIVE_BIG_ENDIAN=1)
+    TRY_COMPILE(HAVE_TI_MODE_COMPILE ${CMAKE_CURRENT_BINARY_DIR}/build ${CMAKE_CURRENT_SOURCE_DIR}/test/HAVE_TI_MODE.c COMPILE_DEFINITIONS -DNATIVE_BIG_ENDIAN=1)
 ELSE(${IS_BIGENDIAN})
-    TRY_COMPILE(HAVE_TI_MODE_COMPILE ${CMAKE_CURRENT_SOURCE_DIR}/build ${CMAKE_CURRENT_SOURCE_DIR}/test/HAVE_TI_MODE.c COMPILE_DEFINITIONS -DNATIVE_LITTLE_ENDIAN=1)
+    TRY_COMPILE(HAVE_TI_MODE_COMPILE ${CMAKE_CURRENT_BINARY_DIR}/build ${CMAKE_CURRENT_SOURCE_DIR}/test/HAVE_TI_MODE.c COMPILE_DEFINITIONS -DNATIVE_LITTLE_ENDIAN=1)
 ENDIF(${IS_BIGENDIAN})
 
 IF(HAVE_TI_MODE_COMPILE)
@@ -162,7 +164,7 @@ ENDIF(HAVE_TI_MODE_COMPILE)
 
 
 #Check if weak symbols are supported.
-TRY_COMPILE(HAVE_WEAK_SYMBOLS_COMPILE ${CMAKE_CURRENT_SOURCE_DIR}/build ${CMAKE_CURRENT_SOURCE_DIR}/test/HAVE_WEAK_SYMBOLS.c)
+TRY_COMPILE(HAVE_WEAK_SYMBOLS_COMPILE ${CMAKE_CURRENT_BINARY_DIR}/build ${CMAKE_CURRENT_SOURCE_DIR}/test/HAVE_WEAK_SYMBOLS.c)
 IF(HAVE_WEAK_SYMBOLS_COMPILE)
     ADD_DEFINITIONS("-DHAVE_WEAK_SYMBOLS")
     MESSAGE("Weak Symbols are supported.")
@@ -173,7 +175,7 @@ ENDIF(HAVE_WEAK_SYMBOLS_COMPILE)
 
 
 #Is __STDC_LIMIT_MACROS needed check.
-TRY_COMPILE(IS_STDC_LIMIT_MACROS_NEEDED_COMPILE ${CMAKE_CURRENT_SOURCE_DIR}/build ${CMAKE_CURRENT_SOURCE_DIR}/test/IS_STDC_LIMIT_MACROS_NEEDED.c)
+TRY_COMPILE(IS_STDC_LIMIT_MACROS_NEEDED_COMPILE ${CMAKE_CURRENT_BINARY_DIR}/build ${CMAKE_CURRENT_SOURCE_DIR}/test/IS_STDC_LIMIT_MACROS_NEEDED.c)
 IF(IS_STDC_LIMIT_MACROS_NEEDED_COMPILE)
     #If this works then we dont need to define __STDC_LIMIT_MACROS and __STDC_CONSTANT_MACROS.
     MESSAGE("__STDC_LIMIT_MACROS and __STDC_CONSTANT_MACROS not needed.")
@@ -197,7 +199,7 @@ ENDIF(CMAKE_ASM_COMPILER_WORKS)
 
 
 #cpuid instruction check
-TRY_COMPILE(IS_CPUID_INSTRUCTION_AVAILABLE_COMPILE ${CMAKE_CURRENT_SOURCE_DIR}/build ${CMAKE_CURRENT_SOURCE_DIR}/test/HAVE_CPUID.c)
+TRY_COMPILE(IS_CPUID_INSTRUCTION_AVAILABLE_COMPILE ${CMAKE_CURRENT_BINARY_DIR}/build ${CMAKE_CURRENT_SOURCE_DIR}/test/HAVE_CPUID.c)
 IF(IS_CPUID_INSTRUCTION_AVAILABLE_COMPILE)
     SET(IS_CPUID_INSTRUCTION_AVAILABLE ON)
     ADD_DEFINITIONS("-DHAVE_CPUID")
@@ -226,7 +228,7 @@ ELSE(DISABLE_ASM)
 
     IF(ASSEMBLER_AVAILABLE)
 
-        TRY_COMPILE(HAVE_AMD64_ASM_COMPILE ${CMAKE_CURRENT_SOURCE_DIR}/build ${CMAKE_CURRENT_SOURCE_DIR}/test/HAVE_AMD64_ASM.c)
+        TRY_COMPILE(HAVE_AMD64_ASM_COMPILE ${CMAKE_CURRENT_BINARY_DIR}/build ${CMAKE_CURRENT_SOURCE_DIR}/test/HAVE_AMD64_ASM.c)
         ADD_DEFINITIONS(-DHAVE_AMD64_ASM=1)
         IF(HAVE_AMD64_ASM_COMPILE)
 
@@ -437,6 +439,8 @@ INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/src)
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/src/libsodium)
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/src/libsodium/include)
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/src/libsodium/include/sodium)
+#For version.h.in to version.h
+INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR}/src/libsodium/include/sodium)
 
 SET(libsodium_HEADERS ${libsodium_HEADERS}
     src/libsodium/include/sodium.h
@@ -491,7 +495,7 @@ SET(libsodium_HEADERS ${libsodium_HEADERS}
     src/libsodium/include/sodium/randombytes_sysrandom.h
     src/libsodium/include/sodium/runtime.h
     src/libsodium/include/sodium/utils.h
-    src/libsodium/include/sodium/version.h
+    ${CMAKE_CURRENT_BINARY_DIR}/src/libsodium/include/sodium/version.h
     src/libsodium/crypto_auth/hmacsha256/cp/api.h
     src/libsodium/crypto_auth/hmacsha512/cp/api.h
     src/libsodium/crypto_auth/hmacsha512256/cp/api.h
@@ -707,7 +711,7 @@ ENDIF(NOT ENABLE_MINIMAL_BUILD)
 ######################### LIBRARY #########################
 #----------------------------------------------------------
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/build")
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/build")
 
 
 IF(ENABLE_BLOCKING_RANDOM)
@@ -722,18 +726,19 @@ ELSE(LIBSODIUM_BUILD_SHARED_LIBRARIES)
 ENDIF(LIBSODIUM_BUILD_SHARED_LIBRARIES)
 
 SET_TARGET_PROPERTIES(sodium PROPERTIES
-    LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/lib
-    ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/lib
+    LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/lib
+    ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/lib
     PROJECT_LABEL "libsodium"
 )
 
-# CPM stuff
-
-CPM_ForceOnlyOneModuleVersion()
-CPM_ExportAdditionalIncludeDir(${CMAKE_CURRENT_SOURCE_DIR}/src/libsodium/include)
-CPM_ExportAdditionalLibraryTarget("sodium")
-CPM_InitModule(${CPM_MODULE_NAME})
-
+if(NOT DISABLE_CPM)
+  # CPM stuff
+  
+  CPM_ForceOnlyOneModuleVersion()
+  CPM_ExportAdditionalIncludeDir(${CMAKE_CURRENT_SOURCE_DIR}/src/libsodium/include)
+  CPM_ExportAdditionalLibraryTarget("sodium")
+  CPM_InitModule(${CPM_MODULE_NAME})
+endif(NOT DISABLE_CPM)
 
 #----------------------------------------------------------
 ########################## TESTS ##########################
