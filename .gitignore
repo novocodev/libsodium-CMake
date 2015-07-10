@@ -123,3 +123,4 @@ libsodium-android-*
 /bin/
 /obj/
 Vagrantfile
+/lib
