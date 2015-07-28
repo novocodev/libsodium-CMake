@@ -83,6 +83,11 @@ endif(NOT DISABLE_CPM)
 
 MESSAGE("---------------- PERFORMING SYSTEM CHECKS. ----------------")
 
+# MSVC does not provide inline in C (only CXX)
+IF(MSVC)
+    ADD_DEFINITIONS("-Dinline=__inline")
+ENDIF(MSVC)
+
 #Endianess check
 INCLUDE(TestBigEndian)
 TEST_BIG_ENDIAN(BIG_ENDIAN)
