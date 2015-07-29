@@ -229,8 +229,8 @@ ELSE(DISABLE_ASM)
     IF(ASSEMBLER_AVAILABLE)
 
         TRY_COMPILE(HAVE_AMD64_ASM_COMPILE ${CMAKE_CURRENT_BINARY_DIR}/build ${CMAKE_CURRENT_SOURCE_DIR}/test/HAVE_AMD64_ASM.c)
-        ADD_DEFINITIONS(-DHAVE_AMD64_ASM=1)
         IF(HAVE_AMD64_ASM_COMPILE)
+            ADD_DEFINITIONS(-DHAVE_AMD64_ASM=1)
 
             SET(libsodium_HEADERS ${libsodium_HEADERS}
                 src/libsodium/crypto_stream/salsa20/amd64_xmm6/api.h
