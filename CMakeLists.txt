@@ -741,6 +741,7 @@ if(NOT DISABLE_CPM)
   
   CPM_ForceOnlyOneModuleVersion()
   CPM_ExportAdditionalIncludeDir(${CMAKE_CURRENT_SOURCE_DIR}/src/libsodium/include)
+  CPM_ExportAdditionalIncludeDir(${CMAKE_CURRENT_BINARY_DIR}/src/libsodium/include)
   CPM_ExportAdditionalLibraryTarget("sodium")
   CPM_InitModule(${CPM_MODULE_NAME})
 endif(NOT DISABLE_CPM)
