@@ -42,7 +42,7 @@ SET(SODIUM_LIBRARY_VERSION "15:0:2")
 #                     |           set to zero if current is incremented
 #                     +- increment if interfaces have been added, removed or changed
 
-CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/src/libsodium/include/sodium/version.h.in ${CMAKE_CURRENT_BINARY_DIR}/src/libsodium/include/sodium/version.h)
+CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/src/libsodium/include/sodium/version.h.in ${CMAKE_CURRENT_SOURCE_DIR}/src/libsodium/include/sodium/version.h)
 
 
 #-----------------------------------------------------------------------
@@ -741,7 +741,6 @@ if(NOT DISABLE_CPM)
   
   CPM_ForceOnlyOneModuleVersion()
   CPM_ExportAdditionalIncludeDir(${CMAKE_CURRENT_SOURCE_DIR}/src/libsodium/include)
-  CPM_ExportAdditionalIncludeDir(${CMAKE_CURRENT_BINARY_DIR}/src/libsodium/include)
   CPM_ExportAdditionalLibraryTarget("sodium")
   CPM_InitModule(${CPM_MODULE_NAME})
 endif(NOT DISABLE_CPM)
