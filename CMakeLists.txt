@@ -43,6 +43,7 @@ SET(SODIUM_LIBRARY_VERSION "15:0:2")
 #                     +- increment if interfaces have been added, removed or changed
 
 CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/src/libsodium/include/sodium/version.h.in ${CMAKE_CURRENT_SOURCE_DIR}/src/libsodium/include/sodium/version.h)
+CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/src/libsodium/include/sodium/version.h.in ${CMAKE_CURRENT_BINARY_DIR}/src/libsodium/include/sodium/version.h)
 
 
 #-----------------------------------------------------------------------
