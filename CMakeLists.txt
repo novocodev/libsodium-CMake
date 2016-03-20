@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.4)
-project(libsodium_Cmake C CXX ASM)
+project(libsodium C CXX ASM)
 
 #TODO?: Add mmx, SSE2, SSE3, SSSE3 checks.
 #TODO?: More of the emscripten stuff.
@@ -18,7 +18,6 @@ OPTION(ENABLE_TESTS                     "Enable testing.")
 OPTION(DISABLE_ASM                      "Disable AMD64 assembly implementations.")
 OPTION(DISABLE_PIE                      "Do not produce position independent executables.")
 OPTION(DISABLE_SSP                      "Do not compile with -fstack-protector.")
-OPTION(DISABLE_CPM                      "Do not use CPM module")
 
 #----------------------------------------------------------
 ######################### VERSION #########################
@@ -44,38 +43,6 @@ SET(SODIUM_LIBRARY_VERSION "15:0:2")
 
 CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/src/libsodium/include/sodium/version.h.in ${CMAKE_CURRENT_SOURCE_DIR}/src/libsodium/include/sodium/version.h)
 CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/src/libsodium/include/sodium/version.h.in ${CMAKE_CURRENT_BINARY_DIR}/src/libsodium/include/sodium/version.h)
-
-
-#-----------------------------------------------------------------------
-########################### CPM configuration ##########################
-#-----------------------------------------------------------------------
-if(NOT DISABLE_CPM)
-  set(CPM_MODULE_NAME "libsodium_Cmake")
-  set(CPM_LIB_TARGET_NAME ${CPM_MODULE_NAME})
-  
-  if ((DEFINED CPM_DIR) AND (DEFINED CPM_UNIQUE_ID) AND (DEFINED CPM_TARGET_NAME))
-    set(CPM_LIB_TARGET_NAME ${CPM_TARGET_NAME})
-    set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CPM_DIR})
-    include(CPM)
-  else()
-    set (CPM_DIR "${CMAKE_CURRENT_BINARY_DIR}/cpm-packages" CACHE TYPE STRING)
-    find_package(Git)
-    if(NOT GIT_FOUND)
-      message(FATAL_ERROR "CPM requires Git.")
-    endif()
-    if (NOT EXISTS ${CPM_DIR}/CPM.cmake)
-      message(STATUS "Cloning repo (https://github.com/iauns/cpm)")
-      execute_process(
-        COMMAND "${GIT_EXECUTABLE}" clone https://github.com/iauns/cpm ${CPM_DIR}
-        RESULT_VARIABLE error_code
-        OUTPUT_QUIET ERROR_QUIET)
-      if(error_code)
-        message(FATAL_ERROR "CPM failed to get the hash for HEAD")
-      endif()
-    endif()
-    include(${CPM_DIR}/CPM.cmake)
-  endif()
-endif(NOT DISABLE_CPM)
 
 
 #----------------------------------------------------------
@@ -737,15 +704,6 @@ SET_TARGET_PROPERTIES(sodium PROPERTIES
     PROJECT_LABEL "libsodium"
 )
 
-if(NOT DISABLE_CPM)
-  # CPM stuff
-  
-  CPM_ForceOnlyOneModuleVersion()
-  CPM_ExportAdditionalIncludeDir(${CMAKE_CURRENT_SOURCE_DIR}/src/libsodium/include)
-  CPM_ExportAdditionalLibraryTarget("sodium")
-  CPM_InitModule(${CPM_MODULE_NAME})
-endif(NOT DISABLE_CPM)
-
 #----------------------------------------------------------
 ########################## TESTS ##########################
 #----------------------------------------------------------
@@ -872,3 +830,6 @@ IF(${ENABLE_TESTS})
     SET_TESTS_PROPERTIES(verify1_test               PROPERTIES DEPENDS verify1)
 
 ENDIF(${ENABLE_TESTS})
+
+install(TARGETS sodium DESTINATION ".")
+install(FILES ${libsodium_HEADERS} DESTINATION "libsodium")
