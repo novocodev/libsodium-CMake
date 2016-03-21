@@ -888,18 +888,16 @@ install(
 #   * Source/foo/Bar.hpp -> <prefix>/include/foo/Bar.hpp
 #   * Source/foo/Baz.hpp -> <prefix>/include/foo/Baz.hpp
 install(
-    DIRECTORY "Source/foo"
+    DIRECTORY "Source/libsodium"
     DESTINATION "${include_install_dir}"
     FILES_MATCHING PATTERN "*.hpp"
 )
 
 # Export headers:
-#   * ${CMAKE_CURRENT_BINARY_DIR}/bar_export.h -> <prefix>/include/bar_export.h
-#   * ${CMAKE_CURRENT_BINARY_DIR}/baz_export.h -> <prefix>/include/baz_export.h
+#   ${libsodium_HEADERS}
 install(
     FILES
-        "${CMAKE_CURRENT_BINARY_DIR}/bar_export.h"
-        "${CMAKE_CURRENT_BINARY_DIR}/baz_export.h"
+        ${libsodium_HEADERS}
     DESTINATION "${include_install_dir}"
 )
 
