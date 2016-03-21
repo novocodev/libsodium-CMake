@@ -692,13 +692,13 @@ IF(ENABLE_BLOCKING_RANDOM)
 ENDIF(ENABLE_BLOCKING_RANDOM)
 
 IF(LIBSODIUM_BUILD_SHARED_LIBRARIES)
-    ADD_LIBRARY(sodium SHARED ${libsodium_HEADERS} ${libsodium_SOURCE})
+    ADD_LIBRARY(libsodium SHARED ${libsodium_HEADERS} ${libsodium_SOURCE})
 ELSE(LIBSODIUM_BUILD_SHARED_LIBRARIES)
     ADD_DEFINITIONS("-DSODIUM_STATIC")
-    ADD_LIBRARY(sodium STATIC ${libsodium_HEADERS} ${libsodium_SOURCE})
+    ADD_LIBRARY(libsodium STATIC ${libsodium_HEADERS} ${libsodium_SOURCE})
 ENDIF(LIBSODIUM_BUILD_SHARED_LIBRARIES)
 
-SET_TARGET_PROPERTIES(sodium PROPERTIES
+SET_TARGET_PROPERTIES(libsodium PROPERTIES
     LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/lib
     ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/lib
     PROJECT_LABEL "libsodium"
@@ -873,14 +873,16 @@ configure_package_config_file(
 #   * <prefix>/lib/libbaz.a
 #   * header location after install: <prefix>/include/foo/Bar.hpp
 #   * headers can be included by C++ code `#include <foo/Bar.hpp>`
-install(
-    TARGETS libsodium
-    EXPORT "${targets_export_name}"
-    LIBRARY DESTINATION "lib"
-    ARCHIVE DESTINATION "lib"
-    RUNTIME DESTINATION "bin"
-    INCLUDES DESTINATION "${include_install_dir}"
-)
+#install(
+#    TARGETS libsodium
+#    EXPORT "${targets_export_name}"
+#    LIBRARY DESTINATION "lib"
+#    ARCHIVE DESTINATION "lib"
+#    RUNTIME DESTINATION "bin"
+#    INCLUDES DESTINATION "${include_install_dir}"
+#)
+
+install(TARGETS libsodium DESTINATION ".")
 
 # Headers:
 #   * Source/foo/Bar.hpp -> <prefix>/include/foo/Bar.hpp
@@ -917,5 +919,5 @@ install(
     DESTINATION "${config_install_dir}"
 )
 
-install(TARGETS sodium DESTINATION ".")
+
 install(FILES ${libsodium_HEADERS} DESTINATION "libsodium")
