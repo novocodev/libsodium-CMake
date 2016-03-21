@@ -868,5 +868,13 @@ configure_package_config_file(
     INSTALL_DESTINATION "${config_install_dir}"
 )
 
+# Config
+#   * <prefix>/lib/cmake/Foo/FooConfig.cmake
+#   * <prefix>/lib/cmake/Foo/FooConfigVersion.cmake
+install(
+    FILES "${project_config}" "${version_config}"
+    DESTINATION "${config_install_dir}"
+)
+
 install(TARGETS sodium DESTINATION ".")
 install(FILES ${libsodium_HEADERS} DESTINATION "libsodium")
