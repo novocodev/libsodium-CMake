@@ -868,11 +868,52 @@ configure_package_config_file(
     INSTALL_DESTINATION "${config_install_dir}"
 )
 
+# Targets:
+#   * <prefix>/lib/libbar.a
+#   * <prefix>/lib/libbaz.a
+#   * header location after install: <prefix>/include/foo/Bar.hpp
+#   * headers can be included by C++ code `#include <foo/Bar.hpp>`
+#install(
+#    TARGETS bar baz
+#    EXPORT "${targets_export_name}"
+#    LIBRARY DESTINATION "lib"
+#    ARCHIVE DESTINATION "lib"
+#    RUNTIME DESTINATION "bin"
+#    INCLUDES DESTINATION "${include_install_dir}"
+#)
+
+# Headers:
+#   * Source/foo/Bar.hpp -> <prefix>/include/foo/Bar.hpp
+#   * Source/foo/Baz.hpp -> <prefix>/include/foo/Baz.hpp
+install(
+    DIRECTORY "Source/foo"
+    DESTINATION "${include_install_dir}"
+    FILES_MATCHING PATTERN "*.hpp"
+)
+
+# Export headers:
+#   * ${CMAKE_CURRENT_BINARY_DIR}/bar_export.h -> <prefix>/include/bar_export.h
+#   * ${CMAKE_CURRENT_BINARY_DIR}/baz_export.h -> <prefix>/include/baz_export.h
+install(
+    FILES
+        "${CMAKE_CURRENT_BINARY_DIR}/bar_export.h"
+        "${CMAKE_CURRENT_BINARY_DIR}/baz_export.h"
+    DESTINATION "${include_install_dir}"
+)
+
 # Config
 #   * <prefix>/lib/cmake/Foo/FooConfig.cmake
 #   * <prefix>/lib/cmake/Foo/FooConfigVersion.cmake
 install(
     FILES "${project_config}" "${version_config}"
+    DESTINATION "${config_install_dir}"
+)
+
+# Config
+#   * <prefix>/lib/cmake/Foo/FooTargets.cmake
+install(
+    EXPORT "${targets_export_name}"
+    NAMESPACE "${namespace}"
     DESTINATION "${config_install_dir}"
 )
 
