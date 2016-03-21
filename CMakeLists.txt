@@ -873,16 +873,16 @@ configure_package_config_file(
 #   * <prefix>/lib/libbaz.a
 #   * header location after install: <prefix>/include/foo/Bar.hpp
 #   * headers can be included by C++ code `#include <foo/Bar.hpp>`
-#install(
-#    TARGETS libsodium
-#    EXPORT "${targets_export_name}"
-#    LIBRARY DESTINATION "lib"
-#    ARCHIVE DESTINATION "lib"
-#    RUNTIME DESTINATION "bin"
-#    INCLUDES DESTINATION "${include_install_dir}"
-#)
+install(
+    TARGETS libsodium
+    EXPORT "${targets_export_name}"
+    LIBRARY DESTINATION "lib"
+    ARCHIVE DESTINATION "lib"
+    RUNTIME DESTINATION "bin"
+    INCLUDES DESTINATION "${include_install_dir}"
+)
 
-install(TARGETS libsodium DESTINATION ".")
+#install(TARGETS libsodium DESTINATION ".")
 
 # Headers:
 #   * Source/foo/Bar.hpp -> <prefix>/include/foo/Bar.hpp
