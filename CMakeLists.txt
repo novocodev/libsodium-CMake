@@ -888,18 +888,18 @@ install(
 #   * Source/foo/Bar.hpp -> <prefix>/include/foo/Bar.hpp
 #   * Source/foo/Baz.hpp -> <prefix>/include/foo/Baz.hpp
 install(
-    DIRECTORY "Source/libsodium"
+    DIRECTORY "libsodium/include"
     DESTINATION "${include_install_dir}"
-    FILES_MATCHING PATTERN "*.hpp"
+    FILES_MATCHING PATTERN "*.h"
 )
 
 # Export headers:
 #   ${libsodium_HEADERS}
-install(
-    FILES
-        ${libsodium_HEADERS}
-    DESTINATION "${include_install_dir}"
-)
+#install(
+#    FILES
+#        ${libsodium_HEADERS}
+#    DESTINATION "${include_install_dir}"
+#)
 
 # Config
 #   * <prefix>/lib/cmake/Foo/FooConfig.cmake
