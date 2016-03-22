@@ -888,8 +888,8 @@ install(
 #   * Source/foo/Bar.hpp -> <prefix>/include/foo/Bar.hpp
 #   * Source/foo/Baz.hpp -> <prefix>/include/foo/Baz.hpp
 install(
-    DIRECTORY "src/libsodium/include"
-    DESTINATION "${include_install_dir}"
+    DIRECTORY "src/libsodium/include/"
+    DESTINATION "${include_install_dir}/libsodium"
     FILES_MATCHING PATTERN "*.h"
 )
 
